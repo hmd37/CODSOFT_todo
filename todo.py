@@ -6,29 +6,27 @@ app = typer.Typer()
 TASKS_FILE = "tasks.json"
 
 
-def load_tasks() -> list[dict]:
+def load_tasks():
     try:
         with open(TASKS_FILE, "r") as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         return []
 
-def save_tasks(tasks: list[dict]):
+def save_tasks(tasks):
     with open(TASKS_FILE, "w") as f:
         json.dump(tasks, f, indent=4)
 
 tasks = load_tasks()
 
 @app.command()
-def add(description: str):
-    """Add a new task to your To-Do list 📝"""
+def add(description):
     tasks.append({"description": description, "completed": False})
     save_tasks(tasks)
     print(f"[green]✅ Task added successfully:[/green] {description}")
 
 @app.command()
 def view():
-    """View all tasks in your To-Do list 📋"""
     if not tasks:
         print("[yellow]⚠️ No tasks available. Add a new task to get started![/yellow]")
         return
@@ -39,8 +37,7 @@ def view():
         print(f"{idx}. {status} {task['description']}")
 
 @app.command()
-def complete(task_number: int):
-    """Mark a task as completed ✅"""
+def complete(task_number):
     if 1 <= task_number <= len(tasks):
         tasks[task_number - 1]["completed"] = True
         save_tasks(tasks)
@@ -49,8 +46,7 @@ def complete(task_number: int):
         print("[red]❌ Invalid task number. Please enter a valid number.[/red]")
 
 @app.command()
-def remove(task_number: int):
-    """Remove a task from your To-Do list 🗑️"""
+def remove(task_number):
     if 1 <= task_number <= len(tasks):
         removed_task = tasks.pop(task_number - 1)
         save_tasks(tasks)
